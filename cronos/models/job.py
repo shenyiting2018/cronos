@@ -22,3 +22,37 @@ class Job(models.Model):
     service_id = models.CharField(max_length=64, null=True)
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
+
+
+class ExecStatus(models.IntegerChoices):
+    (0, "SCHEDULED"),
+    (1, "ATTEMPTED"),
+    (2, "RUNNING"),
+    (3, "COMPLETED"),
+    (4, "UNKNOWN"),
+    (5, "FAILED")
+
+
+# This model stores the basic information of executions of jobs
+# The relationship between a job and a job execution is one-to-many
+class JobExecution(models.Model):
+    """
+    The class represents an execution of a job
+    id: int, the id of the execution
+    job_id: int, the id of the job
+    cron_expression: str, the cron expression of the job
+    status: int, integers 0-5 represent the following statuses:
+                    0: SCHEDULED, 1: ATTEMPTED, 2: RUNNING,
+                    3: COMPLETED, 4: UNKNOWN,   5: FAILED
+    scheduled_start_time: datetime, schaduled start time
+    start_time: datetime, actual start time
+    end_time: datetime, actual end time
+    """
+
+    id = models.BigAutoField(primary_key=True)
+    job_id = models.IntegerField(unique=True)
+    cron_expression = models.CharField(max_length=32)
+    status = models.IntegerField(default=0, choices=ExecStatus)
+    scheduled_start_time = models.DateTimeField(null=True)
+    start_time = models.DateTimeField(null=True)
+    end_time = models.DateTimeField(null=True)
